@@ -1,11 +1,13 @@
+from matplotlib import pyplot as plt
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
+from scipy.cluster.hierarchy import linkage
+from plotly.figure_factory import create_dendrogram
 
 from src.app.io import list_configs, load_history_data, load_normalized_data, load_config, load_projection
 from src.app.metrics import compute_cluster_metrics
-
 
 def show_overview():
     st.header("Dashboard Overview")
@@ -260,6 +262,18 @@ def show_model_explorer():
                 st.plotly_chart(fig_fcm, use_container_width=True)
             else:
                 st.warning("FCM clustering unavailable")
+                
+        if projection is not None:
+            st.markdown("---")
+            st.subheader("Agglomerative Clustering Dendrogram")
+            X = projection[['Dim1', 'Dim2']].values
+            labels = projection.index.astype(str).tolist()
+            Z = linkage(X, method='ward')
+            fig = create_dendrogram(X, orientation='bottom', labels=labels, linkagefun=lambda x: Z)
+            
+            st.plotly_chart(fig)
+            
+            
 
         if metrics['Fuzzy C-Means']['membership'] is not None:
             st.markdown("---")
