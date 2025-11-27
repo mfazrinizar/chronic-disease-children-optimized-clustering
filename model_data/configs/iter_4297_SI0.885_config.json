@@ -1,0 +1,15 @@
+{
+    "run_id": "cluster-search-flow-v1",
+    "hyperparams": {
+        "Scaler": "Robust",
+        "Transformer": "Spectral",
+        "Metric": "cosine",
+        "Seed": 5742,
+        "SI": 0.884547035,
+        "DBI": 0.124020216
+    },
+    "metrics": {
+        "SI": 0.884547035,
+        "DBI": 0.124020216
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "run_id": "cluster-search-flow-v1",
+    "hyperparams": {
+        "Scaler": "Robust",
+        "Transformer": "Isomap",
+        "Metric": "correlation",
+        "Seed": 29666,
+        "SI": 0.678897055,
+        "DBI": 0.155918391
+    },
+    "metrics": {
+        "SI": 0.678897055,
+        "DBI": 0.155918391
+    }
+}
