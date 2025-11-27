@@ -18,7 +18,7 @@ from src.app.pages import (
 
 
 st.set_page_config(
-	page_title="Chronic Disease Clustering Dashboard",
+	page_title="Clustering of Provinces in Indonesia Based on Chronic Children Disease",
 	page_icon="📊",
 	layout="wide",
 	initial_sidebar_state="expanded",
@@ -26,7 +26,7 @@ st.set_page_config(
 
 
 def main():
-	st.title("Chronic Disease Children Clustering Analysis")
+	st.title("Clustering of Provinces in Indonesia Based on Chronic Children Disease")
 	st.markdown("---")
 
 	with st.sidebar:
