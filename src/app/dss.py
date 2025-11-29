@@ -197,24 +197,25 @@ def calculate_trend(series: pd.Series) -> Dict:
     r_squared = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
     
     # Alternative confidence: consistency of year-over-year direction
-    # Count how many consecutive years move in the same direction as the overall slope
-    # For stable trends (slope ≈ 0), measure how many changes are small
+    # Aligns with the TREND_THRESHOLDS used for direction classification
     if len(values_valid) >= 2:
         year_changes = np.diff(values_valid)
         
-        # Define a threshold for "stable" slope (near zero)
-        # Use 1% of the mean value as the threshold for both slope and changes
-        stability_threshold = abs(mean_y) * 0.01 if mean_y != 0 else 0.01
+        # Use the same threshold as direction classification (±2% = "stable")
+        # Convert to absolute value threshold based on mean
+        stable_threshold = abs(avg_value) * TREND_THRESHOLDS["stable"]  # 2% of average
         
-        if abs(slope) < stability_threshold:
-            # For stable trends, count small year-over-year changes as consistent
-            consistent_years = np.sum(np.abs(year_changes) < stability_threshold * 2)
-        elif slope > 0:
-            # For increasing trends, count positive changes as consistent
-            consistent_years = np.sum(year_changes > 0)
-        else:
-            # For decreasing trends, count negative changes as consistent
+        if direction == "stable":
+            # For stable trends, count year-over-year changes that are small
+            # (within the stable threshold range)
+            consistent_years = np.sum(np.abs(year_changes) <= stable_threshold)
+        elif direction in ["mild_improvement", "significant_improvement"]:
+            # For improving (decreasing) trends, count negative changes
             consistent_years = np.sum(year_changes < 0)
+        else:
+            # For worsening (increasing) trends, count positive changes
+            consistent_years = np.sum(year_changes > 0)
+        
         consistency_ratio = consistent_years / len(year_changes)
     else:
         consistency_ratio = 0
