@@ -14,6 +14,7 @@ from src.app.pages import (
 	show_normalized_data,
 	show_model_explorer,
 	show_comparison,
+	show_decision_support,
 )
 
 
@@ -33,7 +34,7 @@ def main():
 		st.header("Navigation")
 		page = st.radio(
 			"Select Page",
-			["Overview", "Search History", "Normalized Data", "Model Explorer", "Comparison"],
+			["Overview", "Search History", "Normalized Data", "Model Explorer", "Comparison", "Decision Support"],
 		)
 
 	if page == "Overview":
@@ -46,6 +47,8 @@ def main():
 		show_model_explorer()
 	elif page == "Comparison":
 		show_comparison()
+	elif page == "Decision Support":
+		show_decision_support()
 
 
 if __name__ == "__main__":
