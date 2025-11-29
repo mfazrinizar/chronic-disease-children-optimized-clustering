@@ -198,11 +198,22 @@ def calculate_trend(series: pd.Series) -> Dict:
     
     # Alternative confidence: consistency of year-over-year direction
     # Count how many consecutive years move in the same direction as the overall slope
+    # For stable trends (slope ≈ 0), measure how many changes are small
     if len(values_valid) >= 2:
         year_changes = np.diff(values_valid)
-        if slope > 0:
+        
+        # Define a threshold for "stable" slope (near zero)
+        # Use 1% of the mean value as the threshold for both slope and changes
+        stability_threshold = abs(mean_y) * 0.01 if mean_y != 0 else 0.01
+        
+        if abs(slope) < stability_threshold:
+            # For stable trends, count small year-over-year changes as consistent
+            consistent_years = np.sum(np.abs(year_changes) < stability_threshold * 2)
+        elif slope > 0:
+            # For increasing trends, count positive changes as consistent
             consistent_years = np.sum(year_changes > 0)
         else:
+            # For decreasing trends, count negative changes as consistent
             consistent_years = np.sum(year_changes < 0)
         consistency_ratio = consistent_years / len(year_changes)
     else:
