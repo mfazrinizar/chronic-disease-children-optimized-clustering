@@ -23,6 +23,14 @@ def load_normalized_data():
     return None
 
 
+def load_raw_data():
+    """Load the original raw data with temporal information."""
+    path = os.path.join(DATA_DIR, "raw_data.csv")
+    if os.path.exists(path):
+        return pd.read_csv(path, index_col=0)
+    return None
+
+
 def list_configs():
     if not os.path.exists(CONFIGS_DIR):
         return []
