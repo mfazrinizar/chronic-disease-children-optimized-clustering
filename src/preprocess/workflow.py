@@ -18,7 +18,7 @@ def print_workflow_diagram():
          |
          V
     [STEP 3: HYPER-EVOLUTIONARY SEARCH ENGINE]
-         |  <LOOP: 100000 Iterations>
+         |  <LOOP: 100000 Iterations (IF SI < 0.99 OR DBI > 0.01)>
          |-- Randomize: Scaler -> Metric -> Manifold -> Seed
          |-- Project: High Dim -> 2D Space
          |-- Evaluate: K-Means (k=3), AgglomerativeClustering (n=3), Fuzzy C-Means (c=3) -> SI & DBI Scores
