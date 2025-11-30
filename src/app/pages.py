@@ -131,7 +131,7 @@ def show_search_history():
     st.markdown("---")
 
     st.subheader("Top 10 Best Configurations")
-    top10 = history.nlargest(10, 'SI')[['Iteration', 'Scaler', 'Transformer', 'Metric', 'SI', 'DBI', 'Score']]
+    top10 = history.nlargest(10, 'SI')[['Iteration', 'Scaler', 'Transformer', 'Metric', 'Seed', 'SI', 'DBI', 'Score']]
     st.dataframe(top10, use_container_width=True, hide_index=True)
 
     st.markdown("---")
