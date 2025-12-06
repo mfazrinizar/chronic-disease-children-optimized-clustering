@@ -60,7 +60,7 @@ def show_overview():
         df_configs = st.experimental_data_editor({ 'configs': configs }) if False else None
         df_configs = None
         df = { 'Config File': [c['file'] for c in configs], 'Iteration': [c['iteration'] for c in configs], 'Silhouette Index': [c['SI'] for c in configs] }
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df, width='stretch')
     else:
         st.warning("No configurations found in model_data/configs/")
 
@@ -82,7 +82,7 @@ def show_overview():
             )
             fig.update_traces(textposition='top center', marker=dict(size=15))
             fig.update_layout(height=500)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
 
 def show_search_history():
@@ -100,17 +100,17 @@ def show_search_history():
     with col1:
         fig_si = px.line(history, x='Iteration', y='SI', title='Silhouette Index Over Iterations', markers=True)
         fig_si.add_hline(y=history['SI'].max(), line_dash="dash", line_color="green", annotation_text=f"Best: {history['SI'].max():.4f}")
-        st.plotly_chart(fig_si, use_container_width=True)
+        st.plotly_chart(fig_si, width='stretch')
 
     with col2:
         fig_dbi = px.line(history, x='Iteration', y='DBI', title='Davies-Bouldin Index Over Iterations', markers=True)
         fig_dbi.add_hline(y=history['DBI'].min(), line_dash="dash", line_color="green", annotation_text=f"Best: {history['DBI'].min():.4f}")
-        st.plotly_chart(fig_dbi, use_container_width=True)
+        st.plotly_chart(fig_dbi, width='stretch')
 
     st.subheader("Combined Score Progression")
     fig_score = px.line(history, x='Iteration', y='Score', title='Combined Score (SI - 0.5*DBI) Over Iterations', markers=True)
     fig_score.add_hline(y=history['Score'].max(), line_dash="dash", line_color="green")
-    st.plotly_chart(fig_score, use_container_width=True)
+    st.plotly_chart(fig_score, width='stretch')
 
     st.markdown("---")
 
@@ -118,26 +118,26 @@ def show_search_history():
     col1, col2 = st.columns(2)
     with col1:
         fig_scaler = px.box(history, x='Scaler', y='SI', title='SI Distribution by Scaler', color='Scaler')
-        st.plotly_chart(fig_scaler, use_container_width=True)
+        st.plotly_chart(fig_scaler, width='stretch')
     with col2:
         fig_transformer = px.box(history, x='Transformer', y='SI', title='SI Distribution by Transformer', color='Transformer')
-        st.plotly_chart(fig_transformer, use_container_width=True)
+        st.plotly_chart(fig_transformer, width='stretch')
 
     st.subheader("Scaler vs Transformer Heatmap")
     pivot = history.pivot_table(values='SI', index='Scaler', columns='Transformer', aggfunc='mean')
     fig_heat = px.imshow(pivot, text_auto='.3f', aspect='auto', title='Average SI by Scaler and Transformer', color_continuous_scale='RdYlGn')
-    st.plotly_chart(fig_heat, use_container_width=True)
+    st.plotly_chart(fig_heat, width='stretch')
 
     st.markdown("---")
 
     st.subheader("Top 10 Best Configurations")
     top10 = history.nlargest(10, 'SI')[['Iteration', 'Scaler', 'Transformer', 'Metric', 'Seed', 'SI', 'DBI', 'Score']]
-    st.dataframe(top10, use_container_width=True, hide_index=True)
+    st.dataframe(top10, width='stretch', hide_index=True)
 
     st.markdown("---")
 
     st.subheader("Full History Data")
-    st.dataframe(history, use_container_width=True, height=400)
+    st.dataframe(history, width='stretch', height=400)
 
 
 def show_normalized_data():
@@ -149,7 +149,7 @@ def show_normalized_data():
         return
 
     st.subheader("Normalized Data Table")
-    st.dataframe(normalized, use_container_width=True)
+    st.dataframe(normalized, width='stretch')
 
     st.markdown("---")
 
@@ -158,14 +158,14 @@ def show_normalized_data():
     for col in normalized.columns:
         fig_box.add_trace(go.Box(y=normalized[col], name=col))
     fig_box.update_layout(title='Feature Distributions (Box Plot)', showlegend=False, height=400)
-    st.plotly_chart(fig_box, use_container_width=True)
+    st.plotly_chart(fig_box, width='stretch')
 
     st.markdown("---")
 
     st.subheader("Feature Correlation Heatmap")
     corr = normalized.corr()
     fig_corr = px.imshow(corr, text_auto='.2f', aspect='auto', title='Feature Correlation Matrix', color_continuous_scale='RdBu_r')
-    st.plotly_chart(fig_corr, use_container_width=True)
+    st.plotly_chart(fig_corr, width='stretch')
 
     st.markdown("---")
 
@@ -179,12 +179,12 @@ def show_normalized_data():
             name=idx
         ))
     fig_profile.update_layout(title='Province Feature Profiles (Radar Chart)', height=500)
-    st.plotly_chart(fig_profile, use_container_width=True)
+    st.plotly_chart(fig_profile, width='stretch')
 
     st.markdown("---")
 
     st.subheader("Statistical Summary")
-    st.dataframe(normalized.describe(), use_container_width=True)
+    st.dataframe(normalized.describe(), width='stretch')
 
 
 def show_model_explorer():
@@ -218,7 +218,7 @@ def show_model_explorer():
             fig = px.scatter(projection.reset_index(), x='Dim1', y='Dim2', color='Cluster_KM' if 'Cluster_KM' in projection.columns else None, text=projection.index, title=f"Projection for Iteration {selected_config['iteration']}", color_continuous_scale='viridis')
             fig.update_traces(textposition='top center', marker=dict(size=15))
             fig.update_layout(height=500)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         else:
             st.warning("Projection data not found")
 
@@ -257,14 +257,14 @@ def show_model_explorer():
             proj_km['Cluster'] = metrics['KMeans']['labels']
             fig_km = px.scatter(proj_km.reset_index(), x='Dim1', y='Dim2', color='Cluster', text=proj_km.index, title='KMeans Clustering', color_continuous_scale='viridis')
             fig_km.update_traces(textposition='top center', marker=dict(size=15))
-            st.plotly_chart(fig_km, use_container_width=True)
+            st.plotly_chart(fig_km, width='stretch')
 
         with col2:
             proj_hc = projection.copy()
             proj_hc['Cluster'] = metrics['Agglomerative']['labels']
             fig_hc = px.scatter(proj_hc.reset_index(), x='Dim1', y='Dim2', color='Cluster', text=proj_hc.index, title='Agglomerative Clustering', color_continuous_scale='viridis')
             fig_hc.update_traces(textposition='top center', marker=dict(size=15))
-            st.plotly_chart(fig_hc, use_container_width=True)
+            st.plotly_chart(fig_hc, width='stretch')
 
         with col3:
             if metrics['Fuzzy C-Means']['labels'] is not None:
@@ -272,7 +272,7 @@ def show_model_explorer():
                 proj_fcm['Cluster'] = metrics['Fuzzy C-Means']['labels']
                 fig_fcm = px.scatter(proj_fcm.reset_index(), x='Dim1', y='Dim2', color='Cluster', text=proj_fcm.index, title='Fuzzy C-Means Clustering', color_continuous_scale='viridis')
                 fig_fcm.update_traces(textposition='top center', marker=dict(size=15))
-                st.plotly_chart(fig_fcm, use_container_width=True)
+                st.plotly_chart(fig_fcm, width='stretch')
             else:
                 st.warning("FCM clustering unavailable")
                 
@@ -283,8 +283,9 @@ def show_model_explorer():
             labels = projection.index.astype(str).tolist()
             Z = linkage(X, method='ward')
             fig = create_dendrogram(X, orientation='bottom', labels=labels, linkagefun=lambda x: Z)
+            fig.update_layout(height=600)  # Set explicit height to avoid infinity error
             
-            st.plotly_chart(fig)
+            st.plotly_chart(fig, width='stretch')
             
             
 
@@ -294,13 +295,13 @@ def show_model_explorer():
             membership = metrics['Fuzzy C-Means']['membership']
             df_membership = __import__('pandas').DataFrame(membership, index=projection.index, columns=[f"Cluster {i}" for i in range(membership.shape[1])])
             fig_mem = px.imshow(df_membership, text_auto='.3f', aspect='auto', title='Fuzzy Membership Values', color_continuous_scale='Blues', labels={'x': 'Cluster', 'y': 'Province'})
-            st.plotly_chart(fig_mem, use_container_width=True)
+            st.plotly_chart(fig_mem, width='stretch')
             if metrics['Fuzzy C-Means']['FPC'] is not None:
                 st.metric("Fuzzy Partition Coefficient (FPC)", f"{metrics['Fuzzy C-Means']['FPC']:.4f}")
 
         st.markdown("---")
-        st.subheader("Projection Data")
-        st.dataframe(projection, use_container_width=True)
+        st.subheader("2D Projection Data")
+        st.dataframe(projection, width='stretch')
 
 
 def show_comparison():
@@ -342,12 +343,12 @@ def show_comparison():
         if proj1 is not None:
             fig1 = px.scatter(proj1.reset_index(), x='Dim1', y='Dim2', color='Cluster_KM' if 'Cluster_KM' in proj1.columns else None, text=proj1.index, title=f"Projection 1 (SI={config1['SI']:.4f})", color_continuous_scale='viridis')
             fig1.update_traces(textposition='top center', marker=dict(size=12))
-            st.plotly_chart(fig1, use_container_width=True)
+            st.plotly_chart(fig1, width='stretch')
     with col2:
         if proj2 is not None:
             fig2 = px.scatter(proj2.reset_index(), x='Dim1', y='Dim2', color='Cluster_KM' if 'Cluster_KM' in proj2.columns else None, text=proj2.index, title=f"Projection 2 (SI={config2['SI']:.4f})", color_continuous_scale='viridis')
             fig2.update_traces(textposition='top center', marker=dict(size=12))
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
 
     st.markdown("---")
     st.subheader("Metrics Comparison")
@@ -378,18 +379,18 @@ def show_comparison():
         }
 
         df_comp = __import__('pandas').DataFrame(comparison_data)
-        st.dataframe(df_comp, use_container_width=True, hide_index=True)
+        st.dataframe(df_comp, width='stretch', hide_index=True)
 
         fig_comp = go.Figure()
         fig_comp.add_trace(go.Bar(name=f'Config 1 (Iter {config1["iteration"]})', x=['KMeans SI', 'Agglomerative SI', 'FCM SI'], y=[metrics1['KMeans']['SI'], metrics1['Agglomerative']['SI'], metrics1['Fuzzy C-Means']['SI'] if metrics1['Fuzzy C-Means']['SI'] is not None else 0]))
         fig_comp.add_trace(go.Bar(name=f'Config 2 (Iter {config2["iteration"]})', x=['KMeans SI', 'Agglomerative SI', 'FCM SI'], y=[metrics2['KMeans']['SI'], metrics2['Agglomerative']['SI'], metrics2['Fuzzy C-Means']['SI'] if metrics2['Fuzzy C-Means']['SI'] is not None else 0]))
         fig_comp.update_layout(title='Silhouette Index Comparison', barmode='group')
-        st.plotly_chart(fig_comp, use_container_width=True)
+        st.plotly_chart(fig_comp, width='stretch')
 
     st.markdown("---")
     st.subheader("All Configurations SI Ranking")
     fig_rank = px.bar(__import__('pandas').DataFrame(configs), x='iteration', y='SI', title='Silhouette Index by Configuration Iteration', labels={'iteration': 'Iteration', 'SI': 'Silhouette Index'}, color='SI', color_continuous_scale='RdYlGn')
-    st.plotly_chart(fig_rank, use_container_width=True)
+    st.plotly_chart(fig_rank, width='stretch')
 
 
 def show_decision_support():
@@ -499,7 +500,7 @@ def show_decision_support():
         )
         fig_risk.update_traces(textposition='top center', marker=dict(size=18))
         fig_risk.update_layout(height=500)
-        st.plotly_chart(fig_risk, use_container_width=True)
+        st.plotly_chart(fig_risk, width='stretch')
     
     with col2:
         # Risk distribution pie chart
@@ -515,7 +516,7 @@ def show_decision_support():
                 'High Risk': '#e74c3c'
             }
         )
-        st.plotly_chart(fig_pie, use_container_width=True)
+        st.plotly_chart(fig_pie, width='stretch')
         
         # Resource allocation suggestion
         st.markdown("#### Suggested Resource Allocation")
@@ -535,7 +536,7 @@ def show_decision_support():
     display_rankings = rankings[['Rank', 'Province', 'Risk Level', 'Priority', 'Composite Score']].copy()
     st.dataframe(
         display_rankings,
-        use_container_width=True,
+        width='stretch',
         hide_index=True,
         column_config={
             "Rank": st.column_config.NumberColumn("Rank", format="%d"),
@@ -563,7 +564,7 @@ def show_decision_support():
         }
     )
     fig_rank_bar.update_layout(height=600)
-    st.plotly_chart(fig_rank_bar, use_container_width=True)
+    st.plotly_chart(fig_rank_bar, width='stretch')
     
     if raw_data is not None:
         st.markdown("---")
@@ -626,7 +627,7 @@ def show_decision_support():
                             yaxis_title='Prevalence (%)',
                             height=400
                         )
-                        st.plotly_chart(fig_trend, use_container_width=True)
+                        st.plotly_chart(fig_trend, width='stretch')
                     
                     with col2:
                         trend_info = pop_trends.get("disease_trends", {}).get(disease, {})
@@ -718,7 +719,7 @@ def show_decision_support():
                             'Feature': list(cluster_info['feature_means'].keys()),
                             'Cluster Mean': list(cluster_info['feature_means'].values())
                         })
-                        st.dataframe(feat_df, use_container_width=True, hide_index=True)
+                        st.dataframe(feat_df, width='stretch', hide_index=True)
     
     st.markdown("---")
     st.subheader("Province Action Plan Generator")
