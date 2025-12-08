@@ -59,7 +59,13 @@ def show_overview():
     if configs:
         df_configs = st.experimental_data_editor({ 'configs': configs }) if False else None
         df_configs = None
-        df = { 'Config File': [c['file'] for c in configs], 'Iteration': [c['iteration'] for c in configs], 'Silhouette Index': [c['SI'] for c in configs] }
+        df = { 
+            'Config File': [c['file'] for c in configs], 
+            'Iteration': [c['iteration'] for c in configs], 
+            'Silhouette Index': [c['SI'] for c in configs],
+            'Davies-Bouldin Index': [c['DBI'] for c in configs],
+            'Score': [c['Score'] for c in configs]
+        }
         st.dataframe(df, width='stretch')
     else:
         st.warning("No configurations found in model_data/configs/")
@@ -89,6 +95,7 @@ def show_search_history():
     st.header("Hyperparameter Search History")
 
     history = load_history_data()
+    configs = list_configs()
     if history is None:
         st.error("History data not found at model_data/data/history_data.csv")
         return
@@ -133,6 +140,22 @@ def show_search_history():
     st.subheader("Top 10 Best Configurations")
     top10 = history.nlargest(10, 'SI')[['Iteration', 'Scaler', 'Transformer', 'Metric', 'Seed', 'SI', 'DBI', 'Score']]
     st.dataframe(top10, width='stretch', hide_index=True)
+
+    st.markdown("---")
+
+    st.subheader("Top 10 Best Saved Configurations")
+    if configs:
+        top10_saved = configs[:10]  # configs are already sorted by Score
+        saved_df = {
+            'Config File': [c['file'] for c in top10_saved],
+            'Iteration': [c['iteration'] for c in top10_saved],
+            'Silhouette Index': [c['SI'] for c in top10_saved],
+            'Davies-Bouldin Index': [c['DBI'] for c in top10_saved],
+            'Score': [c['Score'] for c in top10_saved]
+        }
+        st.dataframe(saved_df, width='stretch', hide_index=True)
+    else:
+        st.info("No saved configurations found")
 
     st.markdown("---")
 
@@ -195,7 +218,7 @@ def show_model_explorer():
         st.error("No configurations found in model_data/configs/")
         return
 
-    config_options = [f"Iter {c['iteration']} (SI={c['SI']:.4f})" for c in configs]
+    config_options = [f"Iter {c['iteration']} (Score={c['Score']:.3f}, SI={c['SI']:.4f}, DBI={c['DBI']:.4f})" for c in configs]
     selected_idx = st.selectbox("Select Configuration", range(len(config_options)), format_func=lambda x: config_options[x])
 
     selected_config = configs[selected_idx]
@@ -312,7 +335,7 @@ def show_comparison():
         st.warning("Need at least 2 configurations to compare")
         return
 
-    config_options = [f"Iter {c['iteration']} (SI={c['SI']:.4f})" for c in configs]
+    config_options = [f"Iter {c['iteration']} (Score={c['Score']:.3f}, SI={c['SI']:.4f}, DBI={c['DBI']:.4f})" for c in configs]
     col1, col2 = st.columns(2)
     with col1:
         selected_idx1 = st.selectbox("Configuration 1", range(len(config_options)), format_func=lambda x: config_options[x], key='comp1')
@@ -419,7 +442,7 @@ def show_decision_support():
     raw_data = load_raw_data()  # Load raw data for temporal analysis
     
     # Select configuration
-    config_options = [f"Iter {c['iteration']} (SI={c['SI']:.4f})" for c in configs]
+    config_options = [f"Iter {c['iteration']} (Score={c['Score']:.3f}, SI={c['SI']:.4f}, DBI={c['DBI']:.4f})" for c in configs]
     selected_idx = st.selectbox(
         "Select Model Configuration for DSS Analysis",
         range(len(config_options)),

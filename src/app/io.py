@@ -41,8 +41,28 @@ def list_configs():
         if match:
             iteration = int(match.group(1))
             si = float(match.group(2))
-            configs.append({'file': f, 'iteration': iteration, 'SI': si})
-    configs = sorted(configs, key=lambda x: x['SI'], reverse=True)
+            
+            # Load config to get DBI
+            config_path = os.path.join(CONFIGS_DIR, f)
+            try:
+                with open(config_path, 'r') as config_file:
+                    config_data = json.load(config_file)
+                    dbi = config_data.get('metrics', {}).get('DBI', 0.0)
+                    score = si - (0.5 * dbi)
+            except (json.JSONDecodeError, KeyError):
+                dbi = 0.0
+                score = si
+            
+            configs.append({
+                'file': f, 
+                'iteration': iteration, 
+                'SI': si,
+                'DBI': dbi,
+                'Score': score
+            })
+    
+    # Sort by Score instead of SI
+    configs = sorted(configs, key=lambda x: x['Score'], reverse=True)
     return configs
 
 
